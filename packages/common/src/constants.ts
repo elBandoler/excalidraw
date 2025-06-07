@@ -10,6 +10,7 @@ export const isDarwin = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 export const isWindows = /^Win/.test(navigator.platform);
 export const isAndroid = /\b(android)\b/i.test(navigator.userAgent);
 export const isFirefox =
+  typeof window !== "undefined" &&
   "netscape" in window &&
   navigator.userAgent.indexOf("rv:") > 1 &&
   navigator.userAgent.indexOf("Gecko") > 1;
@@ -112,12 +113,14 @@ export const YOUTUBE_STATES = {
 export const ENV = {
   TEST: "test",
   DEVELOPMENT: "development",
+  PRODUCTION: "production",
 };
 
 export const CLASSES = {
   SHAPE_ACTIONS_MENU: "App-menu__left",
   ZOOM_ACTIONS: "zoom-actions",
   SEARCH_MENU_INPUT_WRAPPER: "layer-ui__search-inputWrapper",
+  CONVERT_ELEMENT_TYPE_POPUP: "ConvertElementTypePopup",
 };
 
 export const CJK_HAND_DRAWN_FALLBACK_FONT = "Xiaolai";
@@ -141,6 +144,7 @@ export const FONT_FAMILY = {
   "Lilita One": 7,
   "Comic Shanns": 8,
   "Liberation Sans": 9,
+  Assistant: 10,
 };
 
 export const FONT_FAMILY_FALLBACKS = {
@@ -252,7 +256,7 @@ export const EXPORT_DATA_TYPES = {
   excalidrawClipboardWithAPI: "excalidraw-api/clipboard",
 } as const;
 
-export const EXPORT_SOURCE =
+export const getExportSource = () =>
   window.EXCALIDRAW_EXPORT_SOURCE || window.location.origin;
 
 // time in milliseconds
@@ -318,6 +322,9 @@ export const DEFAULT_MAX_IMAGE_WIDTH_OR_HEIGHT = 1440;
 export const MAX_ALLOWED_FILE_BYTES = 4 * 1024 * 1024;
 
 export const SVG_NS = "http://www.w3.org/2000/svg";
+export const SVG_DOCUMENT_PREAMBLE = `<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+`;
 
 export const ENCRYPTION_KEY_BITS = 128;
 
@@ -470,3 +477,10 @@ export enum UserIdleState {
   AWAY = "away",
   IDLE = "idle",
 }
+
+/**
+ * distance at which we merge points instead of adding a new merge-point
+ * when converting a line to a polygon (merge currently means overlaping
+ * the start and end points)
+ */
+export const LINE_POLYGON_POINT_MERGE_DISTANCE = 20;

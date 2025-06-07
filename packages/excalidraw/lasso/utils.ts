@@ -7,10 +7,12 @@ import {
   polygonIncludesPointNonZero,
 } from "@excalidraw/math";
 
-import type { GlobalPoint, LineSegment } from "@excalidraw/math/types";
+import type {
+  ElementsSegmentsMap,
+  GlobalPoint,
+  LineSegment,
+} from "@excalidraw/math/types";
 import type { ExcalidrawElement } from "@excalidraw/element/types";
-
-export type ElementsSegmentsMap = Map<string, LineSegment<GlobalPoint>[]>;
 
 export const getLassoSelectedElementIds = (input: {
   lassoPath: GlobalPoint[];
@@ -35,9 +37,10 @@ export const getLassoSelectedElementIds = (input: {
   if (simplifyDistance) {
     path = simplify(lassoPath, simplifyDistance) as GlobalPoint[];
   }
+  const unlockedElements = elements.filter((el) => !el.locked);
   // as the path might not enclose a shape anymore, clear before checking
   enclosedElements.clear();
-  for (const element of elements) {
+  for (const element of unlockedElements) {
     if (
       !intersectedElements.has(element.id) &&
       !enclosedElements.has(element.id)

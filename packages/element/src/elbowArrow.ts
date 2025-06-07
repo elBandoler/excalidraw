@@ -50,7 +50,6 @@ import { isBindableElement } from "./typeChecks";
 import {
   type ExcalidrawElbowArrowElement,
   type NonDeletedSceneElementsMap,
-  type SceneElementsMap,
 } from "./types";
 
 import { aabbForElement, pointInsideBounds } from "./shapes";
@@ -887,7 +886,7 @@ export const updateElbowArrowPoints = (
   elementsMap: NonDeletedSceneElementsMap,
   updates: {
     points?: readonly LocalPoint[];
-    fixedSegments?: FixedSegment[] | null;
+    fixedSegments?: readonly FixedSegment[] | null;
     startBinding?: FixedPointBinding | null;
     endBinding?: FixedPointBinding | null;
   },
@@ -974,6 +973,25 @@ export const updateElbowArrowPoints = (
           (p, i) => p[0] === arrow.points[i][0] || p[1] === arrow.points[i][1],
         ),
       "Elbow arrow segments must be either horizontal or vertical",
+    );
+
+    invariant(
+      updates.fixedSegments?.find(
+        (segment) =>
+          segment.index === 1 &&
+          pointsEqual(segment.start, (updates.points ?? arrow.points)[0]),
+      ) == null &&
+        updates.fixedSegments?.find(
+          (segment) =>
+            segment.index === (updates.points ?? arrow.points).length - 1 &&
+            pointsEqual(
+              segment.end,
+              (updates.points ?? arrow.points)[
+                (updates.points ?? arrow.points).length - 1
+              ],
+            ),
+        ) == null,
+      "The first and last segments cannot be fixed",
     );
   }
 
@@ -1273,14 +1291,12 @@ const getElbowArrowData = (
   const startHeading = getBindPointHeading(
     startGlobalPoint,
     endGlobalPoint,
-    elementsMap,
     hoveredStartElement,
     origStartGlobalPoint,
   );
   const endHeading = getBindPointHeading(
     endGlobalPoint,
     startGlobalPoint,
-    elementsMap,
     hoveredEndElement,
     origEndGlobalPoint,
   );
@@ -2250,7 +2266,6 @@ const getGlobalPoint = (
 const getBindPointHeading = (
   p: GlobalPoint,
   otherPoint: GlobalPoint,
-  elementsMap: NonDeletedSceneElementsMap | SceneElementsMap,
   hoveredElement: ExcalidrawBindableElement | null | undefined,
   origPoint: GlobalPoint,
 ): Heading =>
@@ -2268,7 +2283,6 @@ const getBindPointHeading = (
           number,
         ],
       ),
-    elementsMap,
     origPoint,
   );
 
